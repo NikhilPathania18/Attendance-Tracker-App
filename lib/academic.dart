@@ -8,7 +8,7 @@ class AcademicHome extends StatefulWidget {
 }
 
 class _AcademicHomeState extends State<AcademicHome> {
-  List<Subject> subjects = [];
+  List<SubjectAcademic> subjects = [];
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class _AcademicHomeState extends State<AcademicHome> {
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
-              _showAddSubjectDialog(context);
+              _showAddSubjectDialogAcademic(context);
             },
           )
         ],
@@ -32,7 +32,7 @@ class _AcademicHomeState extends State<AcademicHome> {
             margin: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
             child: InkWell(
               onTap: () {
-                _showUpdateSubjectDialog(context, subject);
+                _showUpdateSubjectDialogAcademic(context, subject);
               },
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
@@ -75,7 +75,7 @@ class _AcademicHomeState extends State<AcademicHome> {
     );
   }
 
-  void _showAddSubjectDialog(BuildContext context) async {
+  void _showAddSubjectDialogAcademic(BuildContext context) async {
     final nameController = TextEditingController();
     final targetPercentageController = TextEditingController();
 
@@ -119,7 +119,7 @@ class _AcademicHomeState extends State<AcademicHome> {
                 if (name.isNotEmpty && targetPercentage != null) {
                   setState(() {
                     subjects.add(
-                      Subject(
+                      SubjectAcademic(
                         name: name,
                         targetPercentage: targetPercentage,
                       ),
@@ -136,7 +136,8 @@ class _AcademicHomeState extends State<AcademicHome> {
     );
   }
 
-  void _showUpdateSubjectDialog(BuildContext context, Subject subject) async {
+  void _showUpdateSubjectDialogAcademic(
+      BuildContext context, SubjectAcademic subject) async {
     final obtainedMarksController = TextEditingController();
     final totalMarksController = TextEditingController();
 
@@ -181,7 +182,7 @@ class _AcademicHomeState extends State<AcademicHome> {
                 if (obtainedMarks != null && totalMarks != null) {
                   setState(() {
                     final index = subjects.indexOf(subject);
-                    final updatedSubject = Subject(
+                    final updatedSubject = SubjectAcademic(
                       name: subject.name,
                       targetPercentage: subject.targetPercentage,
                       obtainedMarks: subject.obtainedMarks + obtainedMarks,
@@ -201,13 +202,13 @@ class _AcademicHomeState extends State<AcademicHome> {
   }
 }
 
-class Subject {
+class SubjectAcademic {
   final String name;
   final int targetPercentage;
   int obtainedMarks;
   int totalMarks;
 
-  Subject({
+  SubjectAcademic({
     required this.name,
     required this.targetPercentage,
     this.obtainedMarks = 0,

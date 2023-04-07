@@ -34,7 +34,8 @@ dependencies:
     path: C:/Users/hp/development/projects/academictracker
   attendancetracker:
     path: C:/Users/hp/development/projects/attendancetracker
-
+  provider: ^6.0.0
+  shared_preferences: ^2.0.10
 
 
   # The following adds the Cupertino Icons font to your application.

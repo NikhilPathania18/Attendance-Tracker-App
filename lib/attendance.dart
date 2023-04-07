@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'models/attendance_model.dart';
 
 class AttendanceHome extends StatefulWidget {
   const AttendanceHome({super.key});
@@ -7,7 +10,35 @@ class AttendanceHome extends StatefulWidget {
 }
 
 class _AttendanceHomeState extends State<AttendanceHome> {
-  List<Subject> subjects = [];
+  SubjectAttendance? subjects;
+  // List<SubjectAttendance> subshd = await
+
+  getdata() async {
+    SharedPreferences sdpref = await SharedPreferences.getInstance();
+    String? subsd = sdpref.getString("subjectAddendance");
+    if (subsd != null) {
+      subjects = subjectAttendanceFromJson(subsd);
+    } else {
+      List<Body> bdy;
+      subjects = SubjectAttendance(
+          body: bdy.add(Body(
+              name: "name",
+              targetPercentage: 66,
+              presentCount: 6,
+              absentCount: 6)));
+    }
+  }
+
+  double attendancePercentage(presentCount, absentCount) {
+    final totalClasses = presentCount + absentCount;
+    return totalClasses == 0 ? 100 : (presentCount / totalClasses) * 100;
+  }
+
+  @override
+  void initState() {
+    // getdata();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,20 +49,20 @@ class _AttendanceHomeState extends State<AttendanceHome> {
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
-              _showAddSubjectDialog(context);
+              _showAddSubjectDialogAttendance(context);
             },
           )
         ],
       ),
       body: ListView.builder(
-        itemCount: subjects.length,
+        itemCount: subjects?.body.length,
         itemBuilder: (context, index) {
-          final subject = subjects[index];
+          final subject = subjects?.body[index];
           return Card(
             margin: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
             child: InkWell(
               onTap: () {
-                _showAttendanceDialog(context, subject);
+                _showAttendanceDialog(context, subjects!.body[index]);
               },
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
@@ -39,7 +70,7 @@ class _AttendanceHomeState extends State<AttendanceHome> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      subject.name,
+                      subject!.name,
                       style: TextStyle(
                         fontSize: 18.0,
                         fontWeight: FontWeight.bold,
@@ -48,11 +79,11 @@ class _AttendanceHomeState extends State<AttendanceHome> {
                     Row(
                       children: [
                         Text(
-                          '${subject.attendancePercentage().toStringAsFixed(2)}%',
+                          '${attendancePercentage(1, 2).toStringAsFixed(2)}%',
                           style: TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.bold,
-                            color: subject.attendancePercentage() <
+                            color: attendancePercentage(1, 2) <
                                     subject.targetPercentage
                                 ? Colors.red
                                 : Colors.green,
@@ -63,7 +94,7 @@ class _AttendanceHomeState extends State<AttendanceHome> {
                           icon: Icon(Icons.delete),
                           onPressed: () {
                             setState(() {
-                              subjects.removeAt(index);
+                              subjects?.body.removeAt(index);
                             });
                           },
                         ),
@@ -79,7 +110,7 @@ class _AttendanceHomeState extends State<AttendanceHome> {
     );
   }
 
-  void _showAddSubjectDialog(BuildContext context) async {
+  void _showAddSubjectDialogAttendance(BuildContext context) async {
     final nameController = TextEditingController();
     final targetPercentageController = TextEditingController();
 
@@ -122,8 +153,12 @@ class _AttendanceHomeState extends State<AttendanceHome> {
 
                 if (name.isNotEmpty && targetPercentage != null) {
                   setState(() {
-                    subjects.add(
-                      Subject(name: name, targetPercentage: targetPercentage),
+                    subjects?.body.add(
+                      Body(
+                          name: name,
+                          targetPercentage: targetPercentage,
+                          absentCount: 2,
+                          presentCount: 3),
                     );
                   });
                 }
@@ -137,7 +172,7 @@ class _AttendanceHomeState extends State<AttendanceHome> {
     );
   }
 
-  void _showAttendanceDialog(BuildContext context, Subject subject) async {
+  void _showAttendanceDialog(BuildContext context, Body subject) async {
     int presentCount = subject.presentCount;
     int absentCount = subject.absentCount;
 
@@ -251,24 +286,5 @@ class _AttendanceHomeState extends State<AttendanceHome> {
         );
       },
     );
-  }
-}
-
-class Subject {
-  String name;
-  int targetPercentage;
-  int presentCount;
-  int absentCount;
-
-  Subject({
-    required this.name,
-    required this.targetPercentage,
-    this.presentCount = 0,
-    this.absentCount = 0,
-  });
-
-  double attendancePercentage() {
-    final totalClasses = presentCount + absentCount;
-    return totalClasses == 0 ? 100 : (presentCount / totalClasses) * 100;
   }
 }

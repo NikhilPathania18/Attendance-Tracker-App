@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trackacademia/academic.dart';
 import 'package:trackacademia/attendance.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MyApp());
@@ -26,7 +27,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text('TrackAcademia'),
+        elevation: 10,
+        backgroundColor: Colors.purple,
+        // leading: Container(alignment: child),
       ),
       body: Center(
         child: Column(
