@@ -1,4 +1,8 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'models/academic_model.dart';
 
 class AcademicHome extends StatefulWidget {
   const AcademicHome({super.key});
@@ -8,74 +12,124 @@ class AcademicHome extends StatefulWidget {
 }
 
 class _AcademicHomeState extends State<AcademicHome> {
-  List<Subject> subjects = [];
+  SubjectAcademic subjects = SubjectAcademic(body: []);
+
+  getdata() async {
+    SharedPreferences sdpref = await SharedPreferences.getInstance();
+    String? subsd = sdpref.getString("subjectAcademics");
+    if (subsd != null) {
+      subjects = subjectAcademicFromJson(subsd);
+    } else {
+      subjects.body = [];
+    }
+    return subjects;
+  }
+
+  double percentageObtained(totalMarks, obtainedMarks) {
+    if (totalMarks == 0) {
+      return 0;
+    }
+    return (obtainedMarks / totalMarks) * 100;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Academic Tracker'),
+        shadowColor: Colors.blueGrey,
+        elevation: 10,
+        backgroundColor: Color.fromARGB(255, 158, 49, 109),
+        leading: Container(child: Image.asset('assets/image/logo.png')),
         actions: [
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
-              _showAddSubjectDialog(context);
+              _showAddSubjectDialogAcademic(context);
             },
           )
         ],
       ),
-      body: ListView.builder(
-        itemCount: subjects.length,
-        itemBuilder: (context, index) {
-          final subject = subjects[index];
-          return Card(
-            margin: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
-            child: InkWell(
-              onTap: () {
-                _showUpdateSubjectDialog(context, subject);
-              },
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      subject.name,
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      '${subject.percentageObtained().toStringAsFixed(2)}%',
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        color: subject.percentageObtained() <
-                                subject.targetPercentage
-                            ? Colors.red
-                            : Colors.green,
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        setState(() {
-                          subjects.remove(subject);
-                        });
+      body: FutureBuilder(
+          future: getdata(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            if (snapshot.hasData) {
+              return ListView.builder(
+                itemCount: subjects.body.length,
+                itemBuilder: (context, index) {
+                  final subject = subjects.body[index];
+                  return Card(
+                    margin: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
+                    child: InkWell(
+                      onTap: () {
+                        _showUpdateSubjectDialogAcademic(context, subject);
                       },
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 16.0, horizontal: 24.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              subject.name,
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              '${subject.obtainedMarks} / ${subject.totalMarks}',
+                              style: TextStyle(
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              '${percentageObtained(subject.totalMarks, subject.obtainedMarks).toStringAsFixed(2)}%',
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                                color: percentageObtained(subject.totalMarks,
+                                            subject.obtainedMarks) <
+                                        subject.targetPercentage
+                                    ? Colors.red
+                                    : Colors.green,
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () async {
+                                SharedPreferences sdpref =
+                                    await SharedPreferences.getInstance();
+                                subjects.body.removeAt(index);
+                                sdpref.setString("subjectAcademics",
+                                    subjectAcademicToJson(subjects));
+                                setState(() {});
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
+                  );
+                },
+              );
+            }
+
+            return Center(
+              child: Text("No Data!!!"),
+            );
+          }),
     );
   }
 
-  void _showAddSubjectDialog(BuildContext context) async {
+  void _showAddSubjectDialogAcademic(BuildContext context) async {
     final nameController = TextEditingController();
     final targetPercentageController = TextEditingController();
 
@@ -111,20 +165,25 @@ class _AcademicHomeState extends State<AcademicHome> {
             ),
             TextButton(
               child: Text('Add'),
-              onPressed: () {
+              onPressed: () async {
                 final name = nameController.text;
                 final targetPercentage =
                     int.tryParse(targetPercentageController.text);
 
                 if (name.isNotEmpty && targetPercentage != null) {
-                  setState(() {
-                    subjects.add(
-                      Subject(
-                        name: name,
-                        targetPercentage: targetPercentage,
-                      ),
-                    );
-                  });
+                  subjects.body.add(
+                    Body(
+                      name: name,
+                      targetPercentage: targetPercentage,
+                      obtainedMarks: 0,
+                      totalMarks: 0,
+                    ),
+                  );
+                  SharedPreferences sdpref =
+                      await SharedPreferences.getInstance();
+                  sdpref.setString(
+                      "subjectAcademics", subjectAcademicToJson(subjects));
+                  setState(() {});
                 }
 
                 Navigator.of(context).pop();
@@ -136,9 +195,12 @@ class _AcademicHomeState extends State<AcademicHome> {
     );
   }
 
-  void _showUpdateSubjectDialog(BuildContext context, Subject subject) async {
-    final obtainedMarksController = TextEditingController();
-    final totalMarksController = TextEditingController();
+  void _showUpdateSubjectDialogAcademic(
+      BuildContext context, Body subject) async {
+    final obtainedMarksController =
+        //     TextEditingController(text: subject.obtainedMarks.toString());
+        TextEditingController(text: "");
+    final totalMarksController = TextEditingController(text: "");
 
     await showDialog(
       context: context,
@@ -173,22 +235,25 @@ class _AcademicHomeState extends State<AcademicHome> {
             ),
             TextButton(
               child: Text('Update'),
-              onPressed: () {
+              onPressed: () async {
                 final obtainedMarks =
                     int.tryParse(obtainedMarksController.text);
                 final totalMarks = int.tryParse(totalMarksController.text);
 
                 if (obtainedMarks != null && totalMarks != null) {
-                  setState(() {
-                    final index = subjects.indexOf(subject);
-                    final updatedSubject = Subject(
-                      name: subject.name,
-                      targetPercentage: subject.targetPercentage,
-                      obtainedMarks: subject.obtainedMarks + obtainedMarks,
-                      totalMarks: subject.totalMarks + totalMarks,
-                    );
-                    subjects[index] = updatedSubject;
-                  });
+                  final index = subjects.body.indexOf(subject);
+                  final updatedSubject = Body(
+                    name: subject.name,
+                    targetPercentage: subject.targetPercentage,
+                    obtainedMarks: subject.obtainedMarks + obtainedMarks,
+                    totalMarks: subject.totalMarks + totalMarks,
+                  );
+                  subjects.body[index] = updatedSubject;
+                  SharedPreferences sdpref =
+                      await SharedPreferences.getInstance();
+                  sdpref.setString(
+                      "subjectAcademics", subjectAcademicToJson(subjects));
+                  setState(() {});
                 }
 
                 Navigator.of(context).pop();
@@ -198,26 +263,5 @@ class _AcademicHomeState extends State<AcademicHome> {
         );
       },
     );
-  }
-}
-
-class Subject {
-  final String name;
-  final int targetPercentage;
-  int obtainedMarks;
-  int totalMarks;
-
-  Subject({
-    required this.name,
-    required this.targetPercentage,
-    this.obtainedMarks = 0,
-    this.totalMarks = 0,
-  });
-
-  double percentageObtained() {
-    if (totalMarks == 0) {
-      return 0;
-    }
-    return (obtainedMarks / totalMarks) * 100;
   }
 }
