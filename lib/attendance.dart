@@ -30,6 +30,13 @@ class _AttendanceHomeState extends State<AttendanceHome> {
     return totalClasses == 0 ? 100 : (presentCount / totalClasses) * 100;
   }
 
+  List canLeave(presentCount, totalCount, target) {
+    if ((presentCount / (totalCount + 1)) * 100 >= target) {
+      return ["You can leave next class", 1];
+    }
+    return ["You cannot leave next class", 0];
+  }
+
   @override
   void initState() {
     super.initState();
@@ -77,51 +84,101 @@ class _AttendanceHomeState extends State<AttendanceHome> {
                       child: Padding(
                         padding: EdgeInsets.symmetric(
                             vertical: 16.0, horizontal: 24.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        child: Column(
                           children: [
-                            Text(
-                              subject.name,
-                              style: TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              '${subject.presentCount} / ${subject.presentCount + subject.absentCount}',
-                              style: TextStyle(
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  '${attendancePercentage(subject.presentCount, subject.absentCount).toStringAsFixed(2)}%',
+                                  subject.name,
                                   style: TextStyle(
                                     fontSize: 18.0,
                                     fontWeight: FontWeight.bold,
-                                    color: attendancePercentage(
-                                                subject.presentCount,
-                                                subject.absentCount) <
-                                            subject.targetPercentage
-                                        ? Colors.red
-                                        : Colors.green,
                                   ),
                                 ),
-                                SizedBox(width: 16.0),
-                                IconButton(
-                                  icon: Icon(Icons.delete),
-                                  onPressed: () async {
-                                    SharedPreferences sdpref =
-                                        await SharedPreferences.getInstance();
-                                    subjects.body.removeAt(index);
-                                    sdpref.setString("subjectAddendance",
-                                        subjectAttendanceToJson(subjects));
-                                    setState(() {});
-                                  },
+                                // Text(
+                                //   '${subject.presentCount} / ${subject.presentCount + subject.absentCount}',
+                                //   style: TextStyle(
+                                //     fontSize: 15.0,
+                                //     fontWeight: FontWeight.bold,
+                                //   ),
+                                // ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      '${attendancePercentage(subject.presentCount, subject.absentCount).toStringAsFixed(2)}%',
+                                      style: TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: attendancePercentage(
+                                                    subject.presentCount,
+                                                    subject.absentCount) <
+                                                subject.targetPercentage
+                                            ? Colors.red
+                                            : Colors.green,
+                                      ),
+                                    ),
+                                    SizedBox(width: 16.0),
+                                    IconButton(
+                                        onPressed: () async {
+                                          SharedPreferences sdpref =
+                                              await SharedPreferences
+                                                  .getInstance();
+                                          subject.presentCount += 1;
+                                          subject.absentCount += 0;
+                                          sdpref.setString(
+                                              "subjectAddendance",
+                                              subjectAttendanceToJson(
+                                                  subjects));
+                                          setState(() {});
+                                        },
+                                        icon: Icon(Icons.add)),
+                                    IconButton(
+                                        onPressed: () async {
+                                          SharedPreferences sdpref =
+                                              await SharedPreferences
+                                                  .getInstance();
+                                          subject.presentCount += 0;
+                                          subject.absentCount += 1;
+                                          sdpref.setString(
+                                              "subjectAddendance",
+                                              subjectAttendanceToJson(
+                                                  subjects));
+                                          setState(() {});
+                                        },
+                                        icon: Icon(Icons.remove)),
+                                    IconButton(
+                                      icon: Icon(Icons.delete),
+                                      onPressed: () async {
+                                        SharedPreferences sdpref =
+                                            await SharedPreferences
+                                                .getInstance();
+                                        subjects.body.removeAt(index);
+                                        sdpref.setString("subjectAddendance",
+                                            subjectAttendanceToJson(subjects));
+                                        setState(() {});
+                                      },
+                                    ),
+                                  ],
                                 ),
                               ],
+                            ),
+                            Text(
+                              canLeave(
+                                  subject.presentCount,
+                                  subject.absentCount + subject.presentCount,
+                                  subject.targetPercentage)[0],
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                color: canLeave(
+                                            subject.presentCount,
+                                            subject.absentCount +
+                                                subject.presentCount,
+                                            subject.targetPercentage)[1] ==
+                                        0
+                                    ? Colors.red
+                                    : Colors.green,
+                              ),
                             ),
                           ],
                         ),
