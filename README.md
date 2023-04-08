@@ -13,7 +13,11 @@ The main features of the TrackAcademia application are as follows:
 5.	Data storage: The application stores all data locally on the user's device, ensuring privacy and security of the user's data.
 
 Contributors:
+
 Akhil Kholia : 20bcs087
+
 Abhishek Chauhan: 20bcs092
+
 Nikhil Pthania: 20bcs091
+
 Keshav Kumar: 20bcs111
