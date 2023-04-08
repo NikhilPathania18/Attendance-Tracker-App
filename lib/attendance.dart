@@ -119,36 +119,57 @@ class _AttendanceHomeState extends State<AttendanceHome> {
                                       ),
                                     ),
                                     SizedBox(width: 16.0),
-                                    IconButton(
-                                        onPressed: () async {
-                                          SharedPreferences sdpref =
-                                              await SharedPreferences
-                                                  .getInstance();
-                                          subject.presentCount += 1;
-                                          subject.absentCount += 0;
-                                          sdpref.setString(
-                                              "subjectAddendance",
-                                              subjectAttendanceToJson(
-                                                  subjects));
-                                          setState(() {});
-                                        },
-                                        icon: Icon(Icons.add)),
-                                    IconButton(
-                                        onPressed: () async {
-                                          SharedPreferences sdpref =
-                                              await SharedPreferences
-                                                  .getInstance();
-                                          subject.presentCount += 0;
-                                          subject.absentCount += 1;
-                                          sdpref.setString(
-                                              "subjectAddendance",
-                                              subjectAttendanceToJson(
-                                                  subjects));
-                                          setState(() {});
-                                        },
-                                        icon: Icon(Icons.remove)),
+                                    CircleAvatar(
+                                      radius: 20,
+                                      backgroundColor:
+                                          Color.fromARGB(255, 157, 236, 223),
+                                      child: IconButton(
+                                          color:
+                                              Color.fromARGB(255, 9, 11, 131),
+                                          onPressed: () async {
+                                            SharedPreferences sdpref =
+                                                await SharedPreferences
+                                                    .getInstance();
+                                            subject.presentCount += 1;
+                                            subject.absentCount += 0;
+                                            sdpref.setString(
+                                                "subjectAddendance",
+                                                subjectAttendanceToJson(
+                                                    subjects));
+                                            setState(() {});
+                                          },
+                                          icon: Icon(Icons.add)),
+                                    ),
+                                    Padding(
+                                        padding:
+                                            EdgeInsets.fromLTRB(5, 0, 5, 0)),
+                                    CircleAvatar(
+                                      radius: 20,
+                                      backgroundColor:
+                                          Color.fromARGB(255, 225, 245, 171),
+                                      child: IconButton(
+                                          color:
+                                              Color.fromARGB(255, 9, 11, 131),
+                                          onPressed: () async {
+                                            SharedPreferences sdpref =
+                                                await SharedPreferences
+                                                    .getInstance();
+                                            subject.presentCount += 0;
+                                            subject.absentCount += 1;
+                                            sdpref.setString(
+                                                "subjectAddendance",
+                                                subjectAttendanceToJson(
+                                                    subjects));
+                                            setState(() {});
+                                          },
+                                          icon: Icon(Icons.remove)),
+                                    ),
+                                    Padding(
+                                        padding:
+                                            EdgeInsets.fromLTRB(3, 0, 5, 0)),
                                     IconButton(
                                       icon: Icon(Icons.delete),
+                                      color: Color.fromARGB(255, 110, 15, 36),
                                       onPressed: () async {
                                         SharedPreferences sdpref =
                                             await SharedPreferences

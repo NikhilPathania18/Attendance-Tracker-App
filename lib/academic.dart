@@ -104,6 +104,7 @@ class _AcademicHomeState extends State<AcademicHome> {
                             ),
                             IconButton(
                               icon: Icon(Icons.delete),
+                              color: Color.fromARGB(255, 110, 15, 36),
                               onPressed: () async {
                                 SharedPreferences sdpref =
                                     await SharedPreferences.getInstance();
