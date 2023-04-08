@@ -18,6 +18,6 @@ Akhil Kholia : 20bcs087
 
 Abhishek Chauhan: 20bcs092
 
-Nikhil Pthania: 20bcs091
+Nikhil Pathania: 20bcs091
 
 Keshav Kumar: 20bcs111
