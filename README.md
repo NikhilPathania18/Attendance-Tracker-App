@@ -11,3 +11,8 @@ The main features of the TrackAcademia application are as follows:
 3.	Academic performance tracking: The application allows users to input their current marks for each course and calculate their overall performance percentage accurately.
 4.	User-friendly interface: The application has a user-friendly interface that is easy to navigate and use.
 5.	Data storage: The application stores all data locally on the user's device, ensuring privacy and security of the user's data.
+Contributors:
+Akhil Kholiya : 20bcs087
+Abhishek Chauhan: 20bcs092
+Nikhil Pthania: 20bcs091
+keshav Kumar: 20bcs111
