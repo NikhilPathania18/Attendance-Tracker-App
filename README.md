@@ -4,7 +4,6 @@ Introduction:
 Objective:
 The objective of the TrackAcademia project is to provide a solution for students to track their attendance and academic performance easily and efficiently. Many students find it difficult to keep track of their attendance records and academic progress, which can lead to poor grades and even failure in some cases. The proposed application will provide a convenient and efficient way for students to track their attendance and academic performance, ultimately helping them to achieve their academic goals.
 
-
 Features:
 The main features of the TrackAcademia application are as follows:
 1.	Attendance tracking: The application allows users to enter their attendance for each class and calculate the percentage of attendance accurately.
